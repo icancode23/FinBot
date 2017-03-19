@@ -1,4 +1,6 @@
-package com.example.nipunarora.voiceactions
+package com.example.nipunarora.voiceactions;
+
+// tts-Text to Speech
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,14 +27,18 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
     ImageButton spk;
     String current_query;
     TextView Reply;
+    ImageView graph;
     private static final int SPEECH_REQUEST_CODE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fin_bot);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //toolbar disabled for now
+      /*  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(Boolean.FALSE);
+*/
+
         //********************************* Defining the variables ****************
         tts=(TextToSpeech)new TextToSpeech(this,this);
         replies=new HashMap<String, String>();
@@ -41,7 +48,9 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
         replies.put("iPhone","Not this Month,but if you cut down your leisure expenses by 40 percent you will be able to buy it within next three months");
         spk=(ImageButton)findViewById(R.id.btnSpeak);
         Reply=(TextView)findViewById(R.id.txtSpeechInput);
+        graph=(ImageView)findViewById(R.id.graphicalrepresentation);
         //********************** Defination End ************************************//
+
 
         //*********************** Add Onclick listeners ********************//
         spk.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +73,7 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
                 Log.e("TTS", "This Language is not supported");
             } else {
                 //on compatible language you can facilitate your operations related to tts
+                ;
 
 
             }
@@ -73,9 +83,9 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
         }
 
     }
-    /************************************ end init **************************/
+    //************************************ end init **************************/
 
-    /**************************************** I/O operations of Finbot ********************/
+    //**************************************** I/O operations of Finbot ********************/
     public void listen() {
         Log.d( "MAIN ACTIVITY","displaySpeechRecognizer:Worked ");
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -83,6 +93,9 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
         // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hi");//the code "hi" denotes hindi
+        //disable the speaking button for now and enable when entire parsing and tts processing is done
+        spk.setEnabled(Boolean.FALSE);
+        flushDisplay();
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
@@ -91,8 +104,16 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
 
     private void speakOut(String text_to_be_spoken) {
         Reply.setText(text_to_be_spoken);
-
         tts.speak(text_to_be_spoken, TextToSpeech.QUEUE_FLUSH, null,null);
+        //enable the speaking button
+        spk.setEnabled(Boolean.TRUE);
+
+
+    }
+    private void flushDisplay()
+    {
+        Reply.setText("");
+        graph.setImageDrawable(null);
     }
     //*********************** End of I/O Finbot ***************//
 
@@ -117,12 +138,14 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-    //Analyse User input (NLP) Hard Coded for now*******8****
+    //Analyse User input (NLP) Hard Coded for now******
     void analyseUserInput(String current_query)
     {
-       if (current_query.equals("what was my spending for last month "))
+
+       if (current_query.equals("what was my spending for last month"))
        {
            speakOut(replies.get("Spending"));
+           showGraphs();
        }
        else {
            if (current_query.equals( "when did I get last paid")) {
@@ -135,6 +158,7 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
                        speakOut(replies.get("iPhone"));
                    } else {
                        Toast.makeText(this, "Nothing Matched", Toast.LENGTH_SHORT).show();
+                       spk.setEnabled(Boolean.TRUE);
                    }
                }
            }
@@ -142,9 +166,14 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
        }
 
     }
+    void showGraphs(){
+        //**************** show the suitable graphs ******************/
+        //hard coded for now
+        graph.setImageResource(R.drawable.spendinggraph);
+    }
 
 
-    /************************* End of Parsing ********************/
+    //************************* End of Parsing ********************/
 
     ///// we need to stop the text to speech at the onDestroy of The Activity
     @Override
