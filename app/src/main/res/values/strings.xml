@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">VoiceActions</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_fin_bot">FinBot</string>
+</resources>
