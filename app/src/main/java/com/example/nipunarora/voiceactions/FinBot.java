@@ -43,9 +43,9 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
         tts=(TextToSpeech)new TextToSpeech(this,this);
         replies=new HashMap<String, String>();
         replies.put("Salary","You were last paid on 22nd February 2017 with an amount of Rupees 50,000 By Amazon");
-        replies.put("Spending","Here is the Breakup of your spending from the last 30 days. ");
-        replies.put("Homeloan","You have 85 percent chances of getting a loan of 70 lacs");
-        replies.put("iPhone","Not this Month,but if you cut down your leisure expenses by 40 percent you will be able to buy it within next three months");
+        replies.put("Spending","Here is the Breakup of your spending from the last 30 days.");
+        replies.put("Homeloan","You have 85 percent chances of getting a loan of 70 lacs.Your loan percentage was calculated using behaviour score");
+        replies.put("Atm","Your nearest ATM is Yes bank ATM,Nanak Pura which is 2.5 km away.Do you want me to guide you through GPS ?");
         spk=(ImageButton)findViewById(R.id.btnSpeak);
         Reply=(TextView)findViewById(R.id.txtSpeechInput);
         graph=(ImageView)findViewById(R.id.graphicalrepresentation);
@@ -127,7 +127,7 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
                     RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
             current_query=spokenText;
-            Toast.makeText(this,"You Said "+spokenText,Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"You Said "+spokenText,Toast.LENGTH_SHORT).show();
             Log.d("you said",spokenText);
             analyseUserInput(current_query);
 
@@ -145,7 +145,7 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
        if (current_query.equals("what was my spending for last month"))
        {
            speakOut(replies.get("Spending"));
-           showGraphs();
+           showGraphics(1);
        }
        else {
            if (current_query.equals( "when did I get last paid")) {
@@ -153,9 +153,11 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
            } else {
                if (current_query.equals( "what are my chances of getting a home loan of 70 lacs with my current financial status")) {
                    speakOut(replies.get("Homeloan"));
+                   showGraphics(2);
                } else {
-                   if (current_query.equals( "can i afford an iphone this month")) {
-                       speakOut(replies.get("iPhone"));
+                   if (current_query.equals( "which is the nearest ATM to me")) {
+                       speakOut(replies.get("Atm"));
+                       showGraphics(3);
                    } else {
                        Toast.makeText(this, "Nothing Matched", Toast.LENGTH_SHORT).show();
                        spk.setEnabled(Boolean.TRUE);
@@ -166,10 +168,20 @@ public class FinBot extends AppCompatActivity implements TextToSpeech.OnInitList
        }
 
     }
-    void showGraphs(){
+    void showGraphics(int condition_code){
         //**************** show the suitable graphs ******************/
         //hard coded for now
-        graph.setImageResource(R.drawable.spendinggraph);
+        switch (condition_code)
+        {
+            case 1:graph.setImageResource(R.drawable.spendinggraph);
+                break;
+            case 2:graph.setImageResource(R.drawable.loan);
+                break;
+            case 3:graph.setImageResource(R.drawable.map);
+                break;
+            default:break;
+        }
+
     }
 
 
